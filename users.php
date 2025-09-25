@@ -10,7 +10,7 @@ include_once('templates/header.php');
   <?php
   // jika ada tombol simpan
   if (isset($_POST['simpan'])) {
-      if (tambah_tamu($_POST) > 0) {
+      if (tambah_user($_POST) > 0) {
   ?>
           <div class="alert alert-success" role="alert">
               Data berhasil disimpan!
@@ -54,14 +54,14 @@ include_once('templates/header.php');
 
                   // query untuk mengambil semua data dari tabel buku_tamu
                   $users = query("SELECT * FROM user");
-                  foreach($users as $users) : ?>
+                  foreach($users as $user) : ?>
                       <tr>
                           <td><?php echo $no++; ?></td>
-                          <td><?php echo $users['username']; ?></td>
-                          <td><?php echo $users['user_role']; ?></td>
-                          <td><a class="btn btn-success" href="edit-user.php?id=<?= $users['id_user'] ?>">Ubah</a>
+                          <td><?php echo $user['username']; ?></td>
+                          <td><?php echo $user['user_role']; ?></td>
+                          <td><a class="btn btn-success" href="edit-user.php?id=<?= $user['id_user'] ?>">Ubah</a>
                               <a onclick="confirm('Apakah anda yakin ingin menghapus data ini?')" class="btn btn-danger" 
-                              href="hapus-user.php?id=<?= $users['id_user'] ?>">Hapus</a>
+                              href="hapus-user.php?id=<?= $user['id_user'] ?>">Hapus</a>
                           </td>
                       </tr>
                   <?php endforeach; ?>
@@ -72,3 +72,64 @@ include_once('templates/header.php');
   </div>
 </div>
 <!-- /.container-fluid -->
+
+<?php
+$query = mysqli_query($koneksi, "SELECT max(id_user) as kodeTerbesar FROM user");
+$data = mysqli_fetch_array($query);
+$kodeuser = $data['kodeTerbesar'];
+
+$urutan = (int) substr($kodeuser, 3, 2);
+
+$urutan++;
+
+$huruf = "usr";
+$kodeuser = $huruf . sprintf("%02s", $urutan);
+?>
+
+<!-- Modal Tambah -->
+<div class="modal fade" id="tambahModal" tabindex="-1" aria-labelledby="tambahModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tambahModalLabel">Tambah Data User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="">
+          <input type="hidden" name="id_user" id="id_user" value="<?= $kodeuser ?>">
+          <div class="form-group row">
+            <label for="username" class="col-sm-3 col-form-label">Username</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="username" name="username">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="password" class="col-sm-3 col-form-label">Password</label>
+            <div class="col-sm-8">
+              <input class="form-control" type="password" id="password" name="password">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="user_role" class="col-sm-3 col-form-label">User Role</label>
+            <div class="col-sm-8">
+              <select class="form-control" id="user_role" name="user_role">
+                <option value="admin">Administrator</option>
+                <option value="operator">Operator</option>
+              </select>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Keluar</button>
+        <button type="submit" name="simpan" class="btn btn-primary">Simpan</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<?php
+include_once('templates/footer.php')
+?>
