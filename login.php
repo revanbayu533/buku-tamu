@@ -1,8 +1,13 @@
 <?php
 require 'koneksi.php';
+session_start();
+
 if (isset($_POST['login'])) {
+  header("Location: index.php");
+}
+if(password_verify($password, $row['password'])) {
   $username = $_POST['username'];
-  $paassword = $_POST['password'];
+  $password = $_POST['password'];
 
   $result = mysqli_query($koneksi, "SELECT * FROM user WHERE username = '$username'");
 
@@ -11,7 +16,7 @@ if (isset($_POST['login'])) {
     // cek apakah passwordnya benar
     $row = mysqli_fetch_assoc($result);
 
-    if (password_verify($paassword, $row['password'])) {
+    if (password_verify($password, $row['password'])) {
 
       // login berhasil
       header("Location: index.php");
